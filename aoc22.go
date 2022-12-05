@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// TODO: Figure out modules so each day can be put into its own file
+
 // An iterator that returns one line of a file at a time
 // Based on/stolen from https://bbengfort.github.io/2016/12/yielding-functions-for-iteration-golang/
 func Readlines(path string) (<-chan string, error) {
@@ -180,7 +182,61 @@ func Day2() {
 	fmt.Println()
 }
 
+func SetIntersection(setA map[rune]struct{}, setB map[rune]struct{}) map[rune]struct{} {
+	intersection := make(map[rune]struct{})
+
+	// iterate through the shorter set
+	if len(setA) > len(setB) {
+		setA, setB = setB, setA
+	}
+
+	for value := range setA {
+		if _, ok := setB[value]; ok {
+			intersection[value] = struct{}{}
+		}
+	}
+	return intersection
+}
+
+func Day3() {
+	fmt.Println("* * * * * * * * * * Day 03 * * * * * * * * * *")
+	dataPath := "inputs/day03"
+	reader, err := Readlines(dataPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	prioritySum := 0
+	for line := range reader {
+		midpoint := len(line) / 2
+
+		// Populate sets of the items in each rucksack
+		sack1Set := make(map[rune]struct{})
+		for _, item := range line[:midpoint] {
+			sack1Set[item] = struct{}{}
+		}
+		sack2Set := make(map[rune]struct{})
+		for _, item := range line[midpoint:] {
+			sack2Set[item] = struct{}{}
+		}
+		// Find the common item between the sets
+		var commonItem rune
+		for item := range SetIntersection(sack1Set, sack2Set) {
+			commonItem = item
+		}
+		if commonItem > 97 {
+			prioritySum += int(commonItem) - 96
+		} else {
+			prioritySum += int(commonItem) - 38
+		}
+	}
+
+	fmt.Println("The total priority of the common items is ", prioritySum)
+}
+
 func main() {
-	Day1()
-	Day2()
+	// Day1()
+	// Day2()
+	Day3()
 }
