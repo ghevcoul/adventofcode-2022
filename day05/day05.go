@@ -113,10 +113,24 @@ func ParseInput(path string) ([]Stack, []Operation) {
 	return stackList, operations
 }
 
-func PerformOperation(operation Operation, stacks []Stack) {
+// Performs Operation assuming only one crate can be moved at a time
+func PerformOperationOneAtATime(operation Operation, stacks []Stack) {
 	for i := 0; i < operation.numCrates; i++ {
 		inHand, _ := stacks[operation.from].Pop()
 		stacks[operation.to].Push(inHand)
+	}
+}
+
+// Perform operations assuming all requested crates can be moved at once
+func PerformOperationInBulk(operation Operation, stacks []Stack) {
+	internalStack := NewStack()
+	for i := 0; i < operation.numCrates; i++ {
+		temp, _ := stacks[operation.from].Pop()
+		internalStack.Push(temp)
+	}
+	for !internalStack.Empty() {
+		temp, _ := internalStack.Pop()
+		stacks[operation.to].Push(temp)
 	}
 }
 
@@ -125,12 +139,24 @@ func Day5() {
 	dataPath := "inputs/day05"
 	stacks, operations := ParseInput(dataPath)
 	for _, operation := range operations {
-		PerformOperation(operation, stacks)
+		PerformOperationOneAtATime(operation, stacks)
 	}
 	// Print the top of each stack
-	fmt.Print("After performing all operations the top of the stacks is ")
+	fmt.Print("Part1: After performing all operations the top of the stacks is ")
 	for _, stack := range stacks {
 		fmt.Print(stack.Peek())
 	}
+	fmt.Println()
+
+	stacks, operations = ParseInput(dataPath)
+	for _, operation := range operations {
+		PerformOperationInBulk(operation, stacks)
+	}
+	// Print the top of each stack
+	fmt.Print("Part2: After performing all operations the top of the stacks is ")
+	for _, stack := range stacks {
+		fmt.Print(stack.Peek())
+	}
+	fmt.Println()
 	fmt.Println()
 }
