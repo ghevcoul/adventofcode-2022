@@ -103,4 +103,5 @@ func Day3() {
 	dataPath := "inputs/day03"
 	Day3a(dataPath)
 	Day3b(dataPath)
+	fmt.Println()
 }
