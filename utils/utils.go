@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"errors"
 	"os"
 )
 
@@ -28,3 +29,49 @@ func Readlines(path string) (<-chan string, error) {
 
 	return chnl, nil
 }
+
+/*
+ * Implement a stack data structure
+ * Currently implemented to hold Strings
+ */
+type Stack struct {
+	top        int      // The index of the element at the top of the stack
+	stackArray []string // An array holding the stack elements
+}
+
+func NewStack() *Stack {
+	stack := new(Stack)
+	stack.top = -1
+	stack.stackArray = make([]string, 100)
+	return stack
+}
+
+func (stack *Stack) Empty() bool {
+	return stack.top == -1
+}
+
+func (stack *Stack) Size() int {
+	return stack.top + 1
+}
+
+func (stack *Stack) Push(data string) {
+	stack.top++
+	stack.stackArray[stack.top] = data
+}
+
+func (stack *Stack) Pop() (string, error) {
+	if stack.top < 0 {
+		return "", errors.New("Stack is empty")
+	}
+	value := stack.stackArray[stack.top]
+	stack.top--
+	return value, nil
+}
+
+func (stack *Stack) Peek() string {
+	return stack.stackArray[stack.top]
+}
+
+/*
+ * End of Stack implementation
+ */

@@ -1,64 +1,17 @@
 package day05
 
 import (
-	"errors"
 	"fmt"
 	"ghevcoul/aoc22/utils"
 	"strconv"
 	"strings"
 )
 
-/*
- * Implement a stack data structure for use in this challenge
- * If it becomes necessary for other challenges, can move it into utils
- */
-type Stack struct {
-	top int  // The index of the element at the top of the stack
-	stackArray []string  // An array holding the stack elements
-}
-
-func NewStack() *Stack {
-	stack := new(Stack)
-	stack.top = -1
-	stack.stackArray = make([]string, 100)
-	return stack
-}
-
-func (stack *Stack) Empty() bool {
-	return stack.top == -1
-}
-
-func (stack *Stack) Size() int {
-	return stack.top + 1
-}
-
-func (stack *Stack) Push(data string) {
-	stack.top++
-	stack.stackArray[stack.top] = data
-}
-
-func (stack *Stack) Pop() (string, error) {
-	if stack.top < 0 {
-		return "", errors.New("Stack is empty!")
-	}
-	value := stack.stackArray[stack.top]
-	stack.top--
-	return value, nil
-}
-
-func (stack *Stack) Peek() string {
-	return stack.stackArray[stack.top]
-}
-
-/*
- * End of Stack implementation
- */
-
 type Operation struct {
 	from, to, numCrates int
 }
 
-func ParseInput(path string) ([]Stack, []Operation) {
+func ParseInput(path string) ([]utils.Stack, []Operation) {
 	reader, err := utils.Readlines(path)
 	if err != nil {
 		fmt.Println(err)
@@ -66,8 +19,8 @@ func ParseInput(path string) ([]Stack, []Operation) {
 	}
 
 	// Determine the starting configuration of the crates
-	// and populate the respective stacks with that configuration 
-	lineBuffer := NewStack()
+	// and populate the respective stacks with that configuration
+	lineBuffer := utils.NewStack()
 	for line := range reader {
 		if len(line) > 0 {
 			lineBuffer.Push(line)
@@ -77,10 +30,10 @@ func ParseInput(path string) ([]Stack, []Operation) {
 	}
 	line, _ := lineBuffer.Pop()
 	numStacks := len(strings.Split(line, "   "))
-	
-	stackList := make([]Stack, numStacks)
+
+	stackList := make([]utils.Stack, numStacks)
 	for i := 0; i < numStacks; i++ {
-		stackList[i] = *NewStack()
+		stackList[i] = *utils.NewStack()
 	}
 	for !lineBuffer.Empty() {
 		line, _ := lineBuffer.Pop()
@@ -114,7 +67,7 @@ func ParseInput(path string) ([]Stack, []Operation) {
 }
 
 // Performs Operation assuming only one crate can be moved at a time
-func PerformOperationOneAtATime(operation Operation, stacks []Stack) {
+func PerformOperationOneAtATime(operation Operation, stacks []utils.Stack) {
 	for i := 0; i < operation.numCrates; i++ {
 		inHand, _ := stacks[operation.from].Pop()
 		stacks[operation.to].Push(inHand)
@@ -122,8 +75,8 @@ func PerformOperationOneAtATime(operation Operation, stacks []Stack) {
 }
 
 // Perform operations assuming all requested crates can be moved at once
-func PerformOperationInBulk(operation Operation, stacks []Stack) {
-	internalStack := NewStack()
+func PerformOperationInBulk(operation Operation, stacks []utils.Stack) {
+	internalStack := utils.NewStack()
 	for i := 0; i < operation.numCrates; i++ {
 		temp, _ := stacks[operation.from].Pop()
 		internalStack.Push(temp)
