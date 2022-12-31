@@ -141,4 +141,6 @@ func Day08() {
 
 	mostScenic := FindMostScenic(heightMap)
 	fmt.Println("The most scenic tree has a score of", mostScenic)
+
+	fmt.Println()
 }
